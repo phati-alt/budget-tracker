@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0a10">
+<title>งบเดือน</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#0a0a10;
+  --surface:#13131c;
+  --surface2:#1a1a26;
+  --surface3:#222230;
+  --surface4:#2a2a3a;
+  --border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.12);
+  --text:#f2f1f8;
+  --text2:#8f8ea8;
+  --text3:#4e4d62;
+  --green:#30d780;
+  --green-dim:rgba(48,215,128,0.12);
+  --red:#ff6b6b;
+  --red-dim:rgba(255,107,107,0.12);
+  --amber:#ffb830;
+  --amber-dim:rgba(255,184,48,0.12);
+  --accent:#6c63ff;
+  --accent-soft:#8b84ff;
+  --accent-dim:rgba(108,99,255,0.15);
+  --tab-h:83px;
+  --safe-top:env(safe-area-inset-top, 44px);
+  --safe-bot:env(safe-area-inset-bottom, 20px);
+  --radius:18px;
+  --radius-sm:12px;
+  --radius-xs:8px;
+}
+html,body{
+  height:100%;
+  width:100%;
+  overflow:hidden;
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Sarabun',sans-serif;
+  font-size:16px;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ───── APP SHELL ───── */
+.app{
+  position:fixed;inset:0;
+  display:flex;flex-direction:column;
+  background:var(--bg);
+  max-width:430px;
+  margin:0 auto;
+}
+
+/* ───── STATUS BAR SPACER ───── */
+.status-bar{
+  height:var(--safe-top);
+  flex-shrink:0;
+  background:var(--bg);
+}
+
+/* ───── SCREENS ───── */
+.screens{
+  flex:1;
+  overflow:hidden;
+  position:relative;
+}
+.screen{
+  position:absolute;inset:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  padding-bottom:calc(var(--tab-h) + 8px);
+  display:none;
+}
+.screen.active{display:block;}
+
+/* Scrollbar hide */
+.screen::-webkit-scrollbar{display:none;}
+
+/* ───── PAGE HEADER ───── */
+.page-header{
+  padding:20px 20px 8px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:10;
+  background:var(--bg);
+}
+.page-title{font-size:28px;font-weight:700;letter-spacing:-0.5px;}
+.header-btn{
+  width:40px;height:40px;border-radius:50%;
+  background:var(--surface2);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;cursor:pointer;transition:background 0.15s;
+}
+.header-btn:active{background:var(--surface3);}
+
+/* ───── MONTH PILL ───── */
+.month-nav{
+  display:flex;align-items:center;justify-content:center;
+  gap:16px;padding:8px 20px 16px;
+}
+.month-arrow{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--surface2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;color:var(--text2);cursor:pointer;
+  transition:all 0.15s;
+}
+.month-arrow:active{background:var(--surface3);color:var(--text);}
+.month-label{
+  font-size:17px;font-weight:600;
+  min-width:180px;text-align:center;
+}
+
+/* ───── HERO CARD (overview) ───── */
+.hero-card{
+  margin:0 16px 12px;
+  background:linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e1b4b 100%);
+  border-radius:24px;
+  padding:24px;
+  position:relative;overflow:hidden;
+}
+.hero-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 80% 20%, rgba(139,132,255,0.25) 0%, transparent 60%);
+}
+.hero-label{font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:6px;font-weight:500;}
+.hero-amount{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:40px;font-weight:600;color:#fff;
+  letter-spacing:-1px;margin-bottom:20px;
+}
+.hero-amount.negative{color:#ff8e8e;}
+.hero-row{
+  display:flex;gap:12px;
+}
+.hero-stat{
+  flex:1;background:rgba(255,255,255,0.08);
+  border-radius:12px;padding:12px;
+  backdrop-filter:blur(10px);
+}
+.hero-stat-label{font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:4px;}
+.hero-stat-val{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:16px;font-weight:600;color:#fff;
+}
+.hero-stat-val.green{color:#6efcb3;}
+.hero-stat-val.red{color:#ff8e8e;}
+
+/* ───── SECTION ───── */
+.section{padding:16px 16px 4px;}
+.section-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:12px;
+}
+.section-title{font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em;}
+.section-link{font-size:13px;color:var(--accent-soft);font-weight:500;}
+
+/* ───── PROGRESS RING ───── */
+.progress-section{
+  margin:0 16px 12px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:16px;
+  display:flex;align-items:center;gap:16px;
+}
+.ring-wrap{position:relative;width:64px;height:64px;flex-shrink:0;}
+.ring-svg{width:64px;height:64px;}
+.ring-center{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;
+}
+.progress-info{flex:1;}
+.progress-info-title{font-size:15px;font-weight:600;margin-bottom:2px;}
+.progress-info-sub{font-size:13px;color:var(--text2);}
+.progress-bar-wrap{margin-top:8px;}
+.prog-bar{height:4px;background:var(--surface3);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:2px;transition:width 0.5s cubic-bezier(.4,0,.2,1);}
+
+/* ───── INCOME CARD ───── */
+.income-card{
+  margin:0 16px 12px;
+  background:var(--green-dim);
+  border:1px solid rgba(48,215,128,0.18);
+  border-radius:var(--radius);padding:16px;
+}
+.income-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.income-badge{
+  display:flex;align-items:center;gap:6px;
+  font-size:13px;font-weight:600;color:var(--green);
+}
+.income-total{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:20px;font-weight:600;color:var(--green);
+}
+.income-chips{display:flex;flex-wrap:wrap;gap:8px;}
+.income-chip{
+  background:rgba(48,215,128,0.1);border:1px solid rgba(48,215,128,0.2);
+  border-radius:20px;padding:6px 12px;
+  display:flex;align-items:center;gap:8px;
+  font-size:13px;
+}
+.chip-name{color:var(--text2);}
+.chip-val{font-family:'IBM Plex Mono',monospace;color:var(--green);font-size:13px;}
+.chip-del{background:none;border:none;color:rgba(48,215,128,0.35);cursor:pointer;font-size:14px;padding:0 0 0 2px;line-height:1;}
+.add-income-chip{
+  background:rgba(48,215,128,0.06);border:1px dashed rgba(48,215,128,0.25);
+  border-radius:20px;padding:6px 14px;
+  font-size:13px;color:rgba(48,215,128,0.5);cursor:pointer;
+  transition:all 0.15s;
+}
+.add-income-chip:active{background:rgba(48,215,128,0.12);}
+
+/* ───── GROUP CARDS ───── */
+.group-card{
+  margin:0 16px 10px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+}
+.group-card-hdr{
+  display:flex;align-items:center;gap:12px;padding:14px 16px;
+  border-bottom:1px solid var(--border);
+}
+.group-icon-wrap{
+  width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+}
+.group-info{flex:1;min-width:0;}
+.group-name{font-size:15px;font-weight:600;}
+.group-count{font-size:12px;color:var(--text3);}
+.group-total{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:16px;font-weight:500;
+}
+.group-menu-btn{
+  width:32px;height:32px;border-radius:8px;background:var(--surface2);
+  border:none;color:var(--text3);cursor:pointer;font-size:18px;
+  display:flex;align-items:center;justify-content:center;
+}
+.group-menu-btn:active{background:var(--surface3);}
+
+.group-items{}
+.item-row{
+  display:flex;align-items:center;padding:11px 16px;gap:10px;
+  border-bottom:1px solid var(--border);
+  transition:background 0.1s;
+  cursor:pointer;
+}
+.item-row:last-child{border-bottom:none;}
+.item-row:active{background:var(--surface2);}
+.item-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.item-name{flex:1;font-size:14px;}
+.item-amount{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:14px;color:var(--text2);
+}
+.item-del{
+  width:28px;height:28px;border-radius:7px;background:none;
+  border:none;color:var(--text3);cursor:pointer;font-size:15px;
+  display:flex;align-items:center;justify-content:center;
+}
+.item-del:active{background:var(--red-dim);color:var(--red);}
+
+.add-item-row{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 16px;cursor:pointer;
+  color:var(--text3);font-size:14px;
+  transition:color 0.15s;
+  border-top:1px dashed var(--border);
+}
+.add-item-row:active{color:var(--accent-soft);}
+
+/* ───── ADD GROUP TILE ───── */
+.add-group-tile{
+  margin:0 16px 10px;
+  background:none;border:2px dashed var(--surface3);
+  border-radius:var(--radius);padding:20px;
+  text-align:center;color:var(--text3);font-size:14px;
+  font-family:'Sarabun',sans-serif;cursor:pointer;
+  transition:all 0.15s;width:calc(100% - 32px);
+}
+.add-group-tile:active{border-color:var(--accent);color:var(--accent-soft);}
+
+/* ───── CHART SCREEN ───── */
+.donut-hero{
+  margin:0 16px 16px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:24px;
+  display:flex;flex-direction:column;align-items:center;gap:20px;
+}
+.donut-center-label{font-size:13px;color:var(--text2);margin-bottom:2px;}
+.donut-center-val{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;}
+.legend-list{}
+.legend-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 0;border-bottom:1px solid var(--border);
+}
+.legend-row:last-child{border-bottom:none;}
+.legend-color{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
+.legend-lbl{flex:1;font-size:14px;}
+.legend-pct{font-size:13px;color:var(--text3);min-width:36px;text-align:right;}
+.legend-amt{font-family:'IBM Plex Mono',monospace;font-size:14px;min-width:80px;text-align:right;}
+
+/* ───── STAT CARDS ───── */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px 16px;}
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:14px;
+}
+.stat-card-lbl{font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);margin-bottom:6px;}
+.stat-card-val{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:600;}
+
+/* ───── BOTTOM TAB BAR ───── */
+.tab-bar{
+  height:var(--tab-h);
+  background:rgba(13,13,20,0.92);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  display:flex;align-items:flex-start;padding-top:8px;
+  flex-shrink:0;
+  position:relative;z-index:50;
+}
+.tab-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;
+  cursor:pointer;padding:4px 0;
+  color:var(--text3);transition:color 0.2s;
+}
+.tab-item.active{color:var(--accent-soft);}
+.tab-icon{font-size:22px;line-height:1;transition:transform 0.2s;}
+.tab-item.active .tab-icon{transform:scale(1.08);}
+.tab-label{font-size:10px;font-weight:500;letter-spacing:0.02em;}
+.tab-dot{
+  width:4px;height:4px;border-radius:50%;
+  background:var(--accent-soft);
+  opacity:0;transition:opacity 0.2s;
+}
+.tab-item.active .tab-dot{opacity:1;}
+
+/* ───── FAB ───── */
+.fab{
+  position:fixed;
+  bottom:calc(var(--tab-h) + 12px);
+  right:20px;
+  width:52px;height:52px;
+  background:var(--accent);
+  border-radius:50%;border:none;
+  font-size:26px;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;z-index:40;
+  box-shadow:0 4px 20px rgba(108,99,255,0.5);
+  transition:transform 0.15s,box-shadow 0.15s;
+}
+.fab:active{transform:scale(0.93);box-shadow:0 2px 10px rgba(108,99,255,0.4);}
+
+/* ───── BOTTOM SHEET ───── */
+.sheet-overlay{
+  position:fixed;inset:0;z-index:100;
+  background:rgba(0,0,0,0.6);
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+  display:flex;align-items:flex-end;
+  opacity:0;pointer-events:none;transition:opacity 0.3s;
+}
+.sheet-overlay.open{opacity:1;pointer-events:auto;}
+.sheet{
+  width:100%;max-width:430px;margin:0 auto;
+  background:var(--surface);
+  border-radius:24px 24px 0 0;
+  border-top:1px solid var(--border2);
+  padding-bottom:max(var(--safe-bot), 20px);
+  transform:translateY(100%);
+  transition:transform 0.4s cubic-bezier(.32,.72,0,1);
+  max-height:92vh;overflow-y:auto;
+}
+.sheet-overlay.open .sheet{transform:translateY(0);}
+.sheet-handle{
+  width:36px;height:4px;border-radius:2px;background:var(--surface4);
+  margin:10px auto 20px;
+}
+.sheet-title{font-size:19px;font-weight:700;padding:0 20px;margin-bottom:20px;}
+.sheet-body{padding:0 20px;}
+
+/* ───── FORM ───── */
+.form-field{margin-bottom:16px;}
+.field-label{font-size:12px;color:var(--text2);margin-bottom:8px;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;display:block;}
+.field-input{
+  width:100%;background:var(--surface2);
+  border:1px solid var(--border2);border-radius:var(--radius-sm);
+  padding:13px 16px;color:var(--text);
+  font-size:16px;font-family:'Sarabun',sans-serif;
+  outline:none;transition:border-color 0.15s;
+  -webkit-appearance:none;
+}
+.field-input:focus{border-color:var(--accent);}
+.field-input::placeholder{color:var(--text3);}
+
+/* ───── CALCULATOR ───── */
+.calc-container{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--radius-sm);overflow:hidden;margin-bottom:16px;
+}
+.calc-screen{
+  padding:8px 16px 10px;
+  min-height:68px;
+  display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-end;
+}
+.calc-expr-line{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:13px;color:var(--text3);min-height:18px;word-break:break-all;text-align:right;
+}
+.calc-main-line{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:30px;font-weight:500;color:var(--text);word-break:break-all;text-align:right;
+}
+.calc-keys{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:1px;background:var(--border);
+}
+.ckey{
+  background:var(--surface2);border:none;
+  padding:16px 4px;
+  font-size:18px;font-family:'IBM Plex Mono',monospace;
+  color:var(--text);cursor:pointer;
+  transition:background 0.1s;
+  -webkit-tap-highlight-color:transparent;
+}
+.ckey:active{background:var(--surface4);}
+.ckey.op{color:var(--accent-soft);background:var(--surface);}
+.ckey.op:active{background:var(--surface3);}
+.ckey.eq{background:var(--accent);color:#fff;font-weight:600;}
+.ckey.eq:active{background:#5a52d5;}
+.ckey.clr{color:var(--red);}
+.ckey.use{
+  grid-column:span 4;
+  background:var(--accent-dim);color:var(--accent-soft);
+  font-family:'Sarabun',sans-serif;font-size:15px;font-weight:600;
+  border-top:1px solid var(--border);padding:14px;
+}
+.ckey.use:active{background:rgba(108,99,255,0.25);}
+
+/* ───── EMOJI & COLOR PICKERS ───── */
+.emoji-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px;}
+.emoji-btn{
+  width:44px;height:44px;border-radius:10px;
+  border:1px solid var(--border);background:var(--surface2);
+  font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all 0.12s;
+}
+.emoji-btn:active,.emoji-btn.sel{border-color:var(--accent);background:var(--accent-dim);}
+.color-grid{display:flex;gap:10px;flex-wrap:wrap;}
+.color-btn{
+  width:36px;height:36px;border-radius:50%;cursor:pointer;
+  border:3px solid transparent;transition:border-color 0.12s;
+}
+.color-btn.sel{border-color:white;}
+
+/* ───── SUBMIT BTN ───── */
+.sheet-submit{
+  width:100%;padding:16px;margin-top:20px;margin-bottom:8px;
+  background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);
+  font-size:16px;font-weight:600;font-family:'Sarabun',sans-serif;
+  cursor:pointer;transition:background 0.15s;
+}
+.sheet-submit:active{background:#5a52d5;}
+
+/* ───── EMPTY ───── */
+.empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:14px;}
+
+/* ───── HAPTIC / TOUCH FEEDBACK ───── */
+@keyframes press{0%{transform:scale(1)}50%{transform:scale(0.97)}100%{transform:scale(1)}}
+.pressed{animation:press 0.15s ease;}
+
+/* ───── SWIPE DELETE HINT ───── */
+.swipe-hint{font-size:11px;color:var(--text3);text-align:center;padding:4px 0 8px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="status-bar"></div>
+
+  <div class="screens">
+
+    <!-- ══════ SCREEN: HOME ══════ -->
+    <div class="screen active" id="screen-home">
+      <div class="page-header">
+        <div class="page-title">งบเดือน 💰</div>
+        <div class="header-btn" onclick="openIncomeSheet()">＋</div>
+      </div>
+      <div class="month-nav">
+        <div class="month-arrow" onclick="changeMonth(-1)">‹</div>
+        <div class="month-label" id="monthLabel"></div>
+        <div class="month-arrow" onclick="changeMonth(1)">›</div>
+      </div>
+      <!-- Hero -->
+      <div class="hero-card" id="heroCard">
+        <div class="hero-label">เงินคงเหลือเดือนนี้</div>
+        <div class="hero-amount" id="heroBalance">฿0</div>
+        <div class="hero-row">
+          <div class="hero-stat">
+            <div class="hero-stat-label">รายรับ</div>
+            <div class="hero-stat-val green" id="heroIncome">฿0</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">รายจ่าย</div>
+            <div class="hero-stat-val red" id="heroExpense">฿0</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">% ออม</div>
+            <div class="hero-stat-val" id="heroSave">0%</div>
+          </div>
+        </div>
+      </div>
+      <!-- Progress -->
+      <div class="progress-section" id="progressSection">
+        <div class="ring-wrap">
+          <svg class="ring-svg" viewBox="0 0 64 64">
+            <circle cx="32" cy="32" r="26" fill="none" stroke="var(--surface3)" stroke-width="7"/>
+            <circle id="ringArc" cx="32" cy="32" r="26" fill="none" stroke="var(--accent-soft)" stroke-width="7"
+              stroke-linecap="round" stroke-dasharray="163.4" stroke-dashoffset="163.4"
+              transform="rotate(-90 32 32)" style="transition:stroke-dashoffset 0.6s cubic-bezier(.4,0,.2,1)"/>
+          </svg>
+          <div class="ring-center" id="ringPct">0%</div>
+        </div>
+        <div class="progress-info">
+          <div class="progress-info-title">ใช้จ่ายไปแล้ว</div>
+          <div class="progress-info-sub" id="progressSub">฿0 จาก ฿0</div>
+          <div class="progress-bar-wrap">
+            <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%;background:var(--accent-soft)"></div></div>
+          </div>
+        </div>
+      </div>
+      <!-- Income summary -->
+      <div class="income-card" id="incomeCard">
+        <div class="income-top">
+          <div class="income-badge">💵 รายรับ</div>
+          <div class="income-total" id="incomeCardTotal">฿0</div>
+        </div>
+        <div class="income-chips" id="incomeChips"></div>
+      </div>
+      <!-- Groups preview -->
+      <div id="homeGroups"></div>
+    </div>
+
+    <!-- ══════ SCREEN: PLAN ══════ -->
+    <div class="screen" id="screen-plan">
+      <div class="page-header">
+        <div class="page-title">รายการ 📋</div>
+        <div class="header-btn" onclick="openGroupSheet()">＋</div>
+      </div>
+      <div style="height:8px"></div>
+      <div id="planGroups"></div>
+      <button class="add-group-tile" onclick="openGroupSheet()">+ เพิ่มหมวดหมู่ใหม่</button>
+      <div style="height:8px"></div>
+    </div>
+
+    <!-- ══════ SCREEN: CHART ══════ -->
+    <div class="screen" id="screen-chart">
+      <div class="page-header">
+        <div class="page-title">สรุป 📊</div>
+      </div>
+      <div style="height:8px"></div>
+      <div class="stat-grid" id="statGrid"></div>
+      <div class="section"><div class="section-title">สัดส่วนค่าใช้จ่าย</div></div>
+      <div class="donut-hero" id="donutHero">
+        <div class="empty">ยังไม่มีข้อมูล</div>
+      </div>
+      <div style="height:8px"></div>
+    </div>
+
+  </div>
+
+  <!-- ══════ BOTTOM TAB BAR ══════ -->
+  <div class="tab-bar">
+    <div class="tab-item active" id="tab-home" onclick="switchScreen('home',this)">
+      <div class="tab-icon">🏠</div>
+      <div class="tab-label">ภาพรวม</div>
+      <div class="tab-dot"></div>
+    </div>
+    <div class="tab-item" id="tab-plan" onclick="switchScreen('plan',this)">
+      <div class="tab-icon">📋</div>
+      <div class="tab-label">รายการ</div>
+      <div class="tab-dot"></div>
+    </div>
+    <div class="tab-item" id="tab-chart" onclick="switchScreen('chart',this)">
+      <div class="tab-icon">📊</div>
+      <div class="tab-label">สรุป</div>
+      <div class="tab-dot"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ INCOME SHEET ══════ -->
+<div class="sheet-overlay" id="incomeSheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">เพิ่มรายรับ</div>
+    <div class="sheet-body">
+      <div class="form-field">
+        <label class="field-label">ชื่อรายรับ</label>
+        <input class="field-input" id="iName" type="text" placeholder="เช่น เงินเดือน, ฟรีแลนซ์">
+      </div>
+      <div class="form-field">
+        <label class="field-label">คำนวณจำนวนเงิน</label>
+        <div class="calc-container">
+          <div class="calc-screen">
+            <div class="calc-expr-line" id="iExpr"></div>
+            <div class="calc-main-line" id="iDisp">0</div>
+          </div>
+          <div class="calc-keys">
+            <button class="ckey clr" onclick="ck('C',1)">C</button>
+            <button class="ckey op" onclick="ck('(',1)">(</button>
+            <button class="ckey op" onclick="ck(')',1)">)</button>
+            <button class="ckey op" onclick="ck('÷',1)">÷</button>
+            <button class="ckey" onclick="ck('7',1)">7</button>
+            <button class="ckey" onclick="ck('8',1)">8</button>
+            <button class="ckey" onclick="ck('9',1)">9</button>
+            <button class="ckey op" onclick="ck('×',1)">×</button>
+            <button class="ckey" onclick="ck('4',1)">4</button>
+            <button class="ckey" onclick="ck('5',1)">5</button>
+            <button class="ckey" onclick="ck('6',1)">6</button>
+            <button class="ckey op" onclick="ck('-',1)">−</button>
+            <button class="ckey" onclick="ck('1',1)">1</button>
+            <button class="ckey" onclick="ck('2',1)">2</button>
+            <button class="ckey" onclick="ck('3',1)">3</button>
+            <button class="ckey op" onclick="ck('+',1)">+</button>
+            <button class="ckey" style="grid-column:span 2" onclick="ck('0',1)">0</button>
+            <button class="ckey" onclick="ck('.',1)">.</button>
+            <button class="ckey eq" onclick="ck('=',1)">=</button>
+            <button class="ckey use" onclick="useCalc(1)">✓  ใช้ค่านี้</button>
+          </div>
+        </div>
+      </div>
+      <div class="form-field">
+        <label class="field-label">จำนวนเงิน (บาท)</label>
+        <input class="field-input" id="iAmt" type="number" placeholder="0" inputmode="decimal">
+      </div>
+      <button class="sheet-submit" onclick="saveIncome()">บันทึกรายรับ</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ GROUP SHEET ══════ -->
+<div class="sheet-overlay" id="groupSheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="groupSheetTitle">เพิ่มหมวดหมู่</div>
+    <div class="sheet-body">
+      <div class="form-field">
+        <label class="field-label">ชื่อหมวดหมู่</label>
+        <input class="field-input" id="gName" type="text" placeholder="เช่น ค่าเช่า, อาหาร">
+      </div>
+      <div class="form-field">
+        <label class="field-label">ไอคอน</label>
+        <div class="emoji-grid" id="emojiGrid"></div>
+      </div>
+      <div class="form-field">
+        <label class="field-label">สี</label>
+        <div class="color-grid" id="colorGrid"></div>
+      </div>
+      <button class="sheet-submit" onclick="saveGroup()">บันทึกหมวดหมู่</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ ITEM SHEET ══════ -->
+<div class="sheet-overlay" id="itemSheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="itemSheetTitle">เพิ่มรายการ</div>
+    <div class="sheet-body">
+      <div class="form-field">
+        <label class="field-label">ชื่อรายการ</label>
+        <input class="field-input" id="itName" type="text" placeholder="เช่น ค่าน้ำ, Netflix">
+      </div>
+      <div class="form-field">
+        <label class="field-label">คำนวณจำนวนเงิน</label>
+        <div class="calc-container">
+          <div class="calc-screen">
+            <div class="calc-expr-line" id="itExpr"></div>
+            <div class="calc-main-line" id="itDisp">0</div>
+          </div>
+          <div class="calc-keys">
+            <button class="ckey clr" onclick="ck('C',0)">C</button>
+            <button class="ckey op" onclick="ck('(',0)">(</button>
+            <button class="ckey op" onclick="ck(')',0)">)</button>
+            <button class="ckey op" onclick="ck('÷',0)">÷</button>
+            <button class="ckey" onclick="ck('7',0)">7</button>
+            <button class="ckey" onclick="ck('8',0)">8</button>
+            <button class="ckey" onclick="ck('9',0)">9</button>
+            <button class="ckey op" onclick="ck('×',0)">×</button>
+            <button class="ckey" onclick="ck('4',0)">4</button>
+            <button class="ckey" onclick="ck('5',0)">5</button>
+            <button class="ckey" onclick="ck('6',0)">6</button>
+            <button class="ckey op" onclick="ck('-',0)">−</button>
+            <button class="ckey" onclick="ck('1',0)">1</button>
+            <button class="ckey" onclick="ck('2',0)">2</button>
+            <button class="ckey" onclick="ck('3',0)">3</button>
+            <button class="ckey op" onclick="ck('+',0)">+</button>
+            <button class="ckey" style="grid-column:span 2" onclick="ck('0',0)">0</button>
+            <button class="ckey" onclick="ck('.',0)">.</button>
+            <button class="ckey eq" onclick="ck('=',0)">=</button>
+            <button class="ckey use" onclick="useCalc(0)">✓  ใช้ค่านี้</button>
+          </div>
+        </div>
+      </div>
+      <div class="form-field">
+        <label class="field-label">จำนวนเงิน (บาท)</label>
+        <input class="field-input" id="itAmt" type="number" placeholder="0" inputmode="decimal">
+      </div>
+      <button class="sheet-submit" onclick="saveItem()">บันทึกรายการ</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const MONTHS=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+const EMOJIS=['🏠','🚗','🍜','🛒','⚡','💊','🎓','✈️','🎮','👗','💄','📱','💻','🐶','🎵','💪','⛽','🚿','📚','🍺','☕','🎬','🏋️','🩺','🎁','👶','🐱','🌿'];
+const COLORS=['#6c63ff','#30d780','#ff6b6b','#ffb830','#60a5fa','#f472b6','#2dd4bf','#fb923c','#a78bfa','#34d399'];
+
+let year=new Date().getFullYear(), month=new Date().getMonth();
+let data={};
+let selEmoji=EMOJIS[0], selColor=COLORS[0];
+let editGid=null, editIid=null, itemGid=null;
+// calc state: 0=item, 1=income
+let cExpr=['',''], cRes=[0,0];
+
+function key(){return year+'-'+month;}
+function md(){if(!data[key()])data[key()]={income:[],groups:[]};return data[key()];}
+function fmt(n){return '฿'+(Math.round(n||0)).toLocaleString('th-TH');}
+function totInc(){return md().income.reduce((s,i)=>s+i.amount,0);}
+function totExp(){return md().groups.reduce((s,g)=>s+g.items.reduce((ss,i)=>ss+i.amount,0),0);}
+function gTot(g){return g.items.reduce((s,i)=>s+i.amount,0);}
+
+function changeMonth(d){
+  month+=d;
+  if(month>11){month=0;year++;}
+  if(month<0){month=11;year--;}
+  render();
+}
+
+function switchScreen(name,tab){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  tab.classList.add('active');
+  if(name==='chart')renderChart();
+}
+
+function render(){
+  document.getElementById('monthLabel').textContent=MONTHS[month]+' '+(year+543);
+  renderSummary();
+  renderHomeGroups();
+  renderPlanGroups();
+  renderChart();
+}
+
+function renderSummary(){
+  const inc=totInc(), exp=totExp(), bal=inc-exp;
+  const pct=inc>0?Math.min(100,Math.round(exp/inc*100)):0;
+  const save=inc>0?Math.max(0,Math.round((inc-exp)/inc*100)):0;
+
+  document.getElementById('heroBalance').textContent=fmt(bal);
+  document.getElementById('heroBalance').className='hero-amount'+(bal<0?' negative':'');
+  document.getElementById('heroIncome').textContent=fmt(inc);
+  document.getElementById('heroExpense').textContent=fmt(exp);
+  document.getElementById('heroSave').textContent=save+'%';
+
+  // ring
+  const circ=163.4;
+  const offset=circ-(pct/100)*circ;
+  document.getElementById('ringArc').style.strokeDashoffset=offset;
+  document.getElementById('ringArc').style.stroke=pct>90?'#ff6b6b':pct>70?'#ffb830':'var(--accent-soft)';
+  document.getElementById('ringPct').textContent=pct+'%';
+  document.getElementById('progressSub').textContent=fmt(exp)+' จาก '+fmt(inc);
+  const pf=document.getElementById('progFill');
+  pf.style.width=pct+'%';
+  pf.style.background=pct>90?'var(--red)':pct>70?'var(--amber)':'var(--accent-soft)';
+
+  // income chips
+  const chips=document.getElementById('incomeChips');
+  document.getElementById('incomeCardTotal').textContent=fmt(inc);
+  if(!md().income.length){
+    chips.innerHTML='<div class="add-income-chip" onclick="openIncomeSheet()">+ เพิ่มรายรับ</div>';
+  }else{
+    chips.innerHTML=md().income.map((it,i)=>`
+      <div class="income-chip">
+        <span class="chip-name">${it.name}</span>
+        <span class="chip-val">${fmt(it.amount)}</span>
+        <button class="chip-del" onclick="delIncome(${i})">✕</button>
+      </div>`).join('')+'<div class="add-income-chip" onclick="openIncomeSheet()">+</div>';
+  }
+}
+
+function renderHomeGroups(){
+  const wrap=document.getElementById('homeGroups');
+  wrap.innerHTML='';
+  if(!md().groups.length){
+    wrap.innerHTML='<div class="empty">ไปที่แท็บ "รายการ" เพื่อเพิ่มหมวดหมู่</div>';
+    return;
+  }
+  md().groups.forEach(g=>{
+    const tot=gTot(g);
+    const card=document.createElement('div');
+    card.className='group-card';
+    card.innerHTML=`
+      <div class="group-card-hdr">
+        <div class="group-icon-wrap" style="background:${g.color}22">${g.icon}</div>
+        <div class="group-info">
+          <div class="group-name">${g.name}</div>
+          <div class="group-count">${g.items.length} รายการ</div>
+        </div>
+        <div class="group-total" style="color:${g.color}">${fmt(tot)}</div>
+      </div>
+      <div class="group-items">
+        ${g.items.length?g.items.map((it,i)=>`
+          <div class="item-row">
+            <div class="item-dot" style="background:${g.color}"></div>
+            <div class="item-name">${it.name}</div>
+            <div class="item-amount">${fmt(it.amount)}</div>
+          </div>`).join(''):'<div style="padding:10px 16px;font-size:13px;color:var(--text3)">ยังไม่มีรายการ</div>'}
+      </div>`;
+    wrap.appendChild(card);
+  });
+}
+
+function renderPlanGroups(){
+  const wrap=document.getElementById('planGroups');
+  wrap.innerHTML='';
+  if(!md().groups.length){
+    wrap.innerHTML='<div class="empty">กด + เพื่อเพิ่มหมวดหมู่แรก</div>';
+    return;
+  }
+  md().groups.forEach(g=>{
+    const tot=gTot(g);
+    const card=document.createElement('div');
+    card.className='group-card';
+    card.innerHTML=`
+      <div class="group-card-hdr">
+        <div class="group-icon-wrap" style="background:${g.color}22">${g.icon}</div>
+        <div class="group-info">
+          <div class="group-name">${g.name}</div>
+          <div class="group-count">${g.items.length} รายการ</div>
+        </div>
+        <div class="group-total" style="color:${g.color}">${fmt(tot)}</div>
+        <button class="group-menu-btn" onclick="delGroup('${g.id}')">✕</button>
+      </div>
+      <div class="group-items">
+        ${g.items.length?g.items.map((it,idx)=>`
+          <div class="item-row">
+            <div class="item-dot" style="background:${g.color}"></div>
+            <div class="item-name">${it.name}</div>
+            <div class="item-amount">${fmt(it.amount)}</div>
+            <button class="item-del" onclick="delItem('${g.id}',${idx})">✕</button>
+          </div>`).join(''):'<div style="padding:10px 16px;font-size:13px;color:var(--text3)">ยังไม่มีรายการ</div>'}
+        <div class="add-item-row" onclick="openItemSheet('${g.id}')"><span style="font-size:18px">＋</span> เพิ่มรายการ</div>
+      </div>`;
+    wrap.appendChild(card);
+  });
+}
+
+function renderChart(){
+  const exp=totExp(), inc=totInc(), bal=inc-exp;
+  const save=inc>0?Math.max(0,Math.round((inc-exp)/inc*100)):0;
+
+  // stat grid
+  document.getElementById('statGrid').innerHTML=`
+    <div class="stat-card">
+      <div class="stat-card-lbl">รายรับ</div>
+      <div class="stat-card-val" style="color:var(--green)">${fmt(inc)}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-lbl">รายจ่าย</div>
+      <div class="stat-card-val" style="color:var(--red)">${fmt(exp)}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-lbl">คงเหลือ</div>
+      <div class="stat-card-val" style="color:${bal>=0?'var(--green)':'var(--red)'}">${fmt(bal)}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-lbl">% ออม</div>
+      <div class="stat-card-val" style="color:var(--accent-soft)">${save}%</div>
+    </div>`;
+
+  const dh=document.getElementById('donutHero');
+  if(!exp||!md().groups.length){dh.innerHTML='<div class="empty">ยังไม่มีข้อมูลค่าใช้จ่าย</div>';return;}
+
+  const size=200,cx=100,cy=100,r=72,sw=30,circ=2*Math.PI*r;
+  let off=0, paths='', legend='';
+  md().groups.forEach(g=>{
+    const tot=gTot(g);if(!tot)return;
+    const pct=tot/exp;
+    const dash=pct*circ;
+    paths+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${g.color}" stroke-width="${sw}"
+      stroke-dasharray="${dash.toFixed(2)} ${(circ-dash).toFixed(2)}"
+      stroke-dashoffset="${(-off*circ).toFixed(2)}" transform="rotate(-90 ${cx} ${cy})"/>`;
+    legend+=`<div class="legend-row">
+      <div class="legend-color" style="background:${g.color}"></div>
+      <div class="legend-lbl">${g.icon} ${g.name}</div>
+      <div class="legend-pct">${Math.round(pct*100)}%</div>
+      <div class="legend-amt">${fmt(tot)}</div>
+    </div>`;
+    off+=pct;
+  });
+
+  dh.innerHTML=`
+    <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--surface3)" stroke-width="${sw}"/>
+      ${paths}
+      <text x="${cx}" y="${cy-10}" text-anchor="middle" font-size="12" fill="var(--text2)" font-family="Sarabun,sans-serif">รวม</text>
+      <text x="${cx}" y="${cy+14}" text-anchor="middle" font-size="20" font-weight="600" fill="var(--text)" font-family="IBM Plex Mono,monospace">${Math.round(exp/1000)}K</text>
+    </svg>
+    <div class="legend-list" style="width:100%">${legend}</div>`;
+}
+
+// ── INCOME ──
+function openIncomeSheet(){
+  cExpr[1]='';cRes[1]=0;
+  document.getElementById('iDisp').textContent='0';
+  document.getElementById('iExpr').textContent='';
+  document.getElementById('iName').value='';
+  document.getElementById('iAmt').value='';
+  openSheet('incomeSheet');
+}
+function saveIncome(){
+  const name=document.getElementById('iName').value.trim();
+  const amt=parseFloat(document.getElementById('iAmt').value)||0;
+  if(!name||!amt)return;
+  md().income.push({name,amount:amt});
+  closeSheet('incomeSheet');render();
+}
+function delIncome(i){md().income.splice(i,1);render();}
+
+// ── GROUP ──
+function openGroupSheet(id=null){
+  editGid=id;selEmoji=EMOJIS[0];selColor=COLORS[0];
+  document.getElementById('groupSheetTitle').textContent=id?'แก้ไขหมวดหมู่':'เพิ่มหมวดหมู่';
+  document.getElementById('gName').value=id?(md().groups.find(g=>g.id===id)||{}).name||'':'';
+  buildEmojiGrid();buildColorGrid();
+  openSheet('groupSheet');
+}
+function buildEmojiGrid(){
+  document.getElementById('emojiGrid').innerHTML=EMOJIS.map(e=>`
+    <div class="emoji-btn${e===selEmoji?' sel':''}" onclick="selEm('${e}',this)">${e}</div>`).join('');
+}
+function buildColorGrid(){
+  document.getElementById('colorGrid').innerHTML=COLORS.map(c=>`
+    <div class="color-btn${c===selColor?' sel':''}" style="background:${c}" onclick="selCol('${c}',this)"></div>`).join('');
+}
+function selEm(e,el){selEmoji=e;document.querySelectorAll('.emoji-btn').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');}
+function selCol(c,el){selColor=c;document.querySelectorAll('.color-btn').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');}
+function saveGroup(){
+  const name=document.getElementById('gName').value.trim();if(!name)return;
+  if(editGid){const g=md().groups.find(x=>x.id===editGid);g.name=name;g.icon=selEmoji;g.color=selColor;}
+  else md().groups.push({id:'g'+Date.now(),name,icon:selEmoji,color:selColor,items:[]});
+  closeSheet('groupSheet');render();
+}
+function delGroup(id){if(!confirm('ลบหมวดหมู่นี้?'))return;md().groups=md().groups.filter(g=>g.id!==id);render();}
+
+// ── ITEM ──
+function openItemSheet(gid,iid=null){
+  itemGid=gid;editIid=iid;
+  cExpr[0]='';cRes[0]=0;
+  document.getElementById('itemSheetTitle').textContent=iid!==null?'แก้ไขรายการ':'เพิ่มรายการ';
+  if(iid!==null){
+    const g=md().groups.find(x=>x.id===gid);
+    const it=g.items[iid];
+    document.getElementById('itName').value=it.name;
+    document.getElementById('itAmt').value=it.amount;
+    document.getElementById('itDisp').textContent=it.amount;
+    cRes[0]=it.amount;
+  }else{
+    document.getElementById('itName').value='';
+    document.getElementById('itAmt').value='';
+    document.getElementById('itDisp').textContent='0';
+  }
+  document.getElementById('itExpr').textContent='';
+  openSheet('itemSheet');
+}
+function saveItem(){
+  const name=document.getElementById('itName').value.trim();
+  const amt=parseFloat(document.getElementById('itAmt').value)||0;
+  if(!name||!amt)return;
+  const g=md().groups.find(x=>x.id===itemGid);
+  if(editIid!==null)g.items[editIid]={name,amount:amt};
+  else g.items.push({name,amount:amt});
+  closeSheet('itemSheet');render();
+}
+function delItem(gid,idx){
+  const g=md().groups.find(x=>x.id===gid);g.items.splice(idx,1);render();
+}
+
+// ── CALCULATOR ──
+function ck(v,isInc){
+  const dispEl=isInc?document.getElementById('iDisp'):document.getElementById('itDisp');
+  const exprEl=isInc?document.getElementById('iExpr'):document.getElementById('itExpr');
+  if(v==='C'){cExpr[isInc]='';;cRes[isInc]=0;dispEl.textContent='0';exprEl.textContent='';return;}
+  if(v==='='){
+    try{
+      const clean=cExpr[isInc].replace(/÷/g,'/').replace(/×/g,'*').replace(/−/g,'-');
+      const res=Function('"use strict";return('+clean+')')();
+      const r=Math.round(res*100)/100;
+      exprEl.textContent=cExpr[isInc]+' =';
+      dispEl.textContent=r;
+      cExpr[isInc]=String(r);cRes[isInc]=r;
+    }catch{dispEl.textContent='Error';}
+    return;
+  }
+  cExpr[isInc]+=v;
+  try{
+    const clean=cExpr[isInc].replace(/÷/g,'/').replace(/×/g,'*').replace(/−/g,'-');
+    const res=Function('"use strict";return('+clean+')')();
+    if(isFinite(res))dispEl.textContent=Math.round(res*100)/100;
+    else dispEl.textContent=cExpr[isInc];
+  }catch{dispEl.textContent=cExpr[isInc];}
+  exprEl.textContent=cExpr[isInc];
+}
+function useCalc(isInc){
+  if(isInc)document.getElementById('iAmt').value=cRes[1];
+  else document.getElementById('itAmt').value=cRes[0];
+}
+
+// ── SHEETS ──
+function openSheet(id){
+  const o=document.getElementById(id);
+  o.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeSheet(id){
+  const o=document.getElementById(id);
+  o.classList.remove('open');
+  document.body.style.overflow='';
+}
+// tap backdrop to close
+['incomeSheet','groupSheet','itemSheet'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',function(e){
+    if(e.target===this)closeSheet(id);
+  });
+});
+
+// ── SEED ──
+function seed(){
+  const m=md();if(m.income.length||m.groups.length)return;
+  m.income.push({name:'เงินเดือน',amount:35000});
+  m.groups.push({id:'g1',name:'ที่อยู่อาศัย',icon:'🏠',color:'#6c63ff',items:[{name:'ค่าเช่า',amount:8000},{name:'ค่าน้ำ',amount:200},{name:'ค่าไฟ',amount:600}]});
+  m.groups.push({id:'g2',name:'อาหาร',icon:'🍜',color:'#30d780',items:[{name:'ค่าอาหาร',amount:5000}]});
+  m.groups.push({id:'g3',name:'เดินทาง',icon:'🚗',color:'#ffb830',items:[{name:'น้ำมัน',amount:2500},{name:'ค่าจอด',amount:800}]});
+  m.groups.push({id:'g4',name:'บันเทิง',icon:'🎬',color:'#f472b6',items:[{name:'Netflix',amount:299},{name:'Spotify',amount:99}]});
+}
+
+seed();render();
+</script>
+</body>
+</html>
