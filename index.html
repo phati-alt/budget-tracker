@@ -289,12 +289,14 @@ const EMOJIS=['🏠','🚗','🍜','🛒','⚡','💊','🎓','✈️','🎮','�
 const COLORS=['#6c63ff','#30d780','#ff6b6b','#ffb830','#60a5fa','#f472b6','#2dd4bf','#fb923c','#a78bfa','#34d399'];
 
 let year=new Date().getFullYear(), month=new Date().getMonth();
-let data={}, selEmoji=EMOJIS[0], selColor=COLORS[0];
+const STORAGE_KEY='budget-app-data';
+let data=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}'), selEmoji=EMOJIS[0], selColor=COLORS[0];
 let editGid=null, editIid=null, itemGid=null;
 let cExpr=['',''], cRes=[0,0];
 
 function key(){return year+'-'+month;}
 function md(){if(!data[key()])data[key()]={income:[],groups:[]};return data[key()];}
+function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(data));}
 function fmt(n){return '฿'+(Math.round(n||0)).toLocaleString('th-TH');}
 function totInc(){return md().income.reduce((s,i)=>s+i.amount,0);}
 function totExp(){return md().groups.reduce((s,g)=>s+g.items.reduce((ss,i)=>ss+i.amount,0),0);}
@@ -394,20 +396,20 @@ function renderChart(){
 }
 
 function openIncomeSheet(){cExpr[1]='';cRes[1]=0;document.getElementById('iDisp').textContent='0';document.getElementById('iExpr').textContent='';document.getElementById('iName').value='';document.getElementById('iAmt').value='';openSheet('incomeSheet');}
-function saveIncome(){const name=document.getElementById('iName').value.trim(),amt=parseFloat(document.getElementById('iAmt').value)||0;if(!name||!amt)return;md().income.push({name,amount:amt});closeSheet('incomeSheet');render();}
-function delIncome(i){md().income.splice(i,1);render();}
+function saveIncome(){const name=document.getElementById('iName').value.trim(),amt=parseFloat(document.getElementById('iAmt').value)||0;if(!name||!amt)return;md().income.push({name,amount:amt});save();closeSheet('incomeSheet');render();}
+function delIncome(i){md().income.splice(i,1);save();render();}
 
 function openGroupSheet(id=null){editGid=id;selEmoji=EMOJIS[0];selColor=COLORS[0];document.getElementById('groupSheetTitle').textContent=id?'แก้ไขหมวดหมู่':'เพิ่มหมวดหมู่';document.getElementById('gName').value=id?(md().groups.find(g=>g.id===id)||{}).name||'':'';buildEmojiGrid();buildColorGrid();openSheet('groupSheet');}
 function buildEmojiGrid(){document.getElementById('emojiGrid').innerHTML=EMOJIS.map(e=>`<div class="emoji-btn${e===selEmoji?' sel':''}" onclick="selEm('${e}',this)">${e}</div>`).join('');}
 function buildColorGrid(){document.getElementById('colorGrid').innerHTML=COLORS.map(c=>`<div class="color-btn${c===selColor?' sel':''}" style="background:${c}" onclick="selCol('${c}',this)"></div>`).join('');}
 function selEm(e,el){selEmoji=e;document.querySelectorAll('.emoji-btn').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');}
 function selCol(c,el){selColor=c;document.querySelectorAll('.color-btn').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');}
-function saveGroup(){const name=document.getElementById('gName').value.trim();if(!name)return;if(editGid){const g=md().groups.find(x=>x.id===editGid);g.name=name;g.icon=selEmoji;g.color=selColor;}else md().groups.push({id:'g'+Date.now(),name,icon:selEmoji,color:selColor,items:[]});closeSheet('groupSheet');render();}
-function delGroup(id){if(!confirm('ลบหมวดหมู่นี้?'))return;md().groups=md().groups.filter(g=>g.id!==id);render();}
+function saveGroup(){const name=document.getElementById('gName').value.trim();if(!name)return;if(editGid){const g=md().groups.find(x=>x.id===editGid);g.name=name;g.icon=selEmoji;g.color=selColor;save();}else md().groups.push({id:'g'+Date.now(),name,icon:selEmoji,color:selColor,items:[]});save();closeSheet('groupSheet');render();}
+function delGroup(id){if(!confirm('ลบหมวดหมู่นี้?'))return;md().groups=md().groups.filter(g=>g.id!==id);save();render();}
 
 function openItemSheet(gid,iid=null){itemGid=gid;editIid=iid;cExpr[0]='';cRes[0]=0;document.getElementById('itemSheetTitle').textContent=iid!==null?'แก้ไขรายการ':'เพิ่มรายการ';if(iid!==null){const g=md().groups.find(x=>x.id===gid),it=g.items[iid];document.getElementById('itName').value=it.name;document.getElementById('itAmt').value=it.amount;document.getElementById('itDisp').textContent=it.amount;cRes[0]=it.amount;}else{document.getElementById('itName').value='';document.getElementById('itAmt').value='';document.getElementById('itDisp').textContent='0';}document.getElementById('itExpr').textContent='';openSheet('itemSheet');}
-function saveItem(){const name=document.getElementById('itName').value.trim(),amt=parseFloat(document.getElementById('itAmt').value)||0;if(!name||!amt)return;const g=md().groups.find(x=>x.id===itemGid);if(editIid!==null)g.items[editIid]={name,amount:amt};else g.items.push({name,amount:amt});closeSheet('itemSheet');render();}
-function delItem(gid,idx){const g=md().groups.find(x=>x.id===gid);g.items.splice(idx,1);render();}
+function saveItem(){const name=document.getElementById('itName').value.trim(),amt=parseFloat(document.getElementById('itAmt').value)||0;if(!name||!amt)return;const g=md().groups.find(x=>x.id===itemGid);if(editIid!==null)g.items[editIid]={name,amount:amt};else g.items.push({name,amount:amt});save();closeSheet('itemSheet');render();}
+function delItem(gid,idx){const g=md().groups.find(x=>x.id===gid);g.items.splice(idx,1);save();render();}
 
 function ck(v,isInc){
   const dispEl=isInc?document.getElementById('iDisp'):document.getElementById('itDisp');
