@@ -236,7 +236,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
           <div class="hero-stat"><div class="hero-stat-label">รายรับ</div><div class="hero-stat-val green" id="heroIncome">฿0</div></div>
           <div class="hero-stat"><div class="hero-stat-label">รายจ่าย</div><div class="hero-stat-val red" id="heroExpense">฿0</div></div>
           <div class="hero-stat">
-            <div class="hero-stat-label">ผ่อนรวม</div>
+            <div class="hero-stat-label">ผ่อนรวมทั้งหมด</div>
             <div class="hero-stat-val" id="heroSave" style="color:#60a5fa">฿0</div>
             <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:3px;">คงเหลือ <span id="heroInstRemain" style="color:rgba(96,165,250,0.8)">฿0</span></div>
           </div>
@@ -254,21 +254,12 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
         <div id="incomeList"></div>
       </div>
 
-      <div style="margin:0 16px 12px;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.22);border-radius:var(--radius);overflow:hidden;">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;">
-          <div class="installment-badge">💳 รายการผ่อน</div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <div class="installment-total" id="installTotal">฿0/เดือน</div>
-            <button onclick="event.stopPropagation();openSheet('installmentSheet')" style="width:32px;height:32px;border-radius:8px;background:rgba(96,165,250,0.15);border:none;color:#60a5fa;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">＋</button>
-          </div>
-        </div>
-        <div id="installHomeList"></div>
-      </div>
       <div class="section-divider">
         <div class="section-divider-title">หมวดหมู่รายจ่าย</div>
         <button class="section-divider-btn" onclick="openGroupSheet()">＋ เพิ่มหมวดหมู่</button>
       </div>
       <div id="groupList"></div>
+
       <div style="height:8px"></div>
     </div>
 
@@ -342,18 +333,18 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
       <div class="form-field"><label class="field-label">ชื่อรายการ</label><input class="field-input" id="instName" type="text" placeholder="เช่น บัตรเครดิต, รถยนต์, มือถือ"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
         <div>
-          <label class="field-label" style="display:block;margin-bottom:6px;">ยอดรวมทั้งหมด (บาท)</label>
+          <label class="field-label" style="display:block;margin-bottom:6px;">ยอดรวม / ยอดผ่อน (บาท)</label>
           <input class="field-input" id="instTotal" type="number" placeholder="0" inputmode="decimal" oninput="calcInstMonthly()">
         </div>
         <div>
-          <label class="field-label" style="display:block;margin-bottom:6px;">% ดอกเบี้ยต่อปี</label>
+          <label class="field-label" style="display:block;margin-bottom:6px;">% ดอกเบี้ย</label>
           <input class="field-input" id="instRate" type="number" placeholder="0.00" inputmode="decimal" step="0.01" oninput="calcInstMonthly()">
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
         <div>
           <label class="field-label" style="display:block;margin-bottom:6px;">งวดทั้งหมด</label>
-          <input class="field-input" id="instTerms" type="number" placeholder="0" inputmode="numeric" oninput="calcInstMonthly()">
+          <input class="field-input" id="instTerms" type="number" placeholder="0" inputmode="numeric" oninput="calcInstMonthly();document.getElementById('instRemain').value=this.value;">
         </div>
         <div>
           <label class="field-label" style="display:block;margin-bottom:6px;">งวดคงเหลือ</label>
@@ -362,14 +353,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
       </div>
       <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:16px;">
         <div style="font-size:12px;color:var(--text2);margin-bottom:6px;">ยอดผ่อนต่อเดือน (คำนวณอัตโนมัติ)</div>
-        <div style="display:flex;align-items:center;gap:10px;">
-          <div id="instMonthlyCalc" style="font-family:'Roboto Mono',monospace;font-size:22px;font-weight:600;color:#60a5fa;flex:1;">฿0</div>
-          <div style="font-size:12px;color:var(--text3);text-align:right;">หรือใส่เอง<br>ด้านล่าง</div>
-        </div>
-      </div>
-      <div class="form-field">
-        <label class="field-label">ยอดผ่อน/เดือน (ใส่เองถ้าต้องการ)</label>
-        <input class="field-input" id="instMonthly" type="number" placeholder="ปล่อยว่างถ้าใช้ค่าคำนวณ" inputmode="decimal">
+        <div id="instMonthlyCalc" style="font-family:'Roboto Mono',monospace;font-size:22px;font-weight:600;color:#60a5fa;">฿0</div>
       </div>
 </div>
     <div class="sheet-footer">
@@ -394,27 +378,27 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
       <div class="form-field"><label class="field-label">ชื่อรายการ</label><input class="field-input" id="instEditName" type="text" placeholder="เช่น บัตรเครดิต, รถยนต์, มือถือ"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
         <div>
-          <label class="field-label" style="display:block;margin-bottom:6px;">ยอดผ่อน/เดือน</label>
-          <input class="field-input" id="instEditMonthly" type="text" placeholder="0" inputmode="decimal" oninput="fmtField(this)">
+          <label class="field-label" style="display:block;margin-bottom:6px;">ยอดรวม / ยอดผ่อน (บาท)</label>
+          <input class="field-input" id="instEditTotal" type="text" placeholder="0" inputmode="decimal" oninput="fmtField(this)">
+        </div>
+        <div>
+          <label class="field-label" style="display:block;margin-bottom:6px;">% ดอกเบี้ย</label>
+          <input class="field-input" id="instEditRate" type="number" placeholder="0.00" step="0.01" inputmode="decimal">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+        <div>
+          <label class="field-label" style="display:block;margin-bottom:6px;">งวดทั้งหมด</label>
+          <input class="field-input" id="instEditTerms" type="number" placeholder="0" inputmode="numeric" oninput="document.getElementById('instEditRemain').value=this.value;">
         </div>
         <div>
           <label class="field-label" style="display:block;margin-bottom:6px;">งวดคงเหลือ</label>
           <input class="field-input" id="instEditRemain" type="number" placeholder="0" inputmode="numeric">
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
-        <div>
-          <label class="field-label" style="display:block;margin-bottom:6px;">ยอดรวมทั้งหมด</label>
-          <input class="field-input" id="instEditTotal" type="text" placeholder="0" inputmode="decimal" oninput="fmtField(this)">
-        </div>
-        <div>
-          <label class="field-label" style="display:block;margin-bottom:6px;">% ดอกเบี้ยต่อปี</label>
-          <input class="field-input" id="instEditRate" type="number" placeholder="0.00" step="0.01" inputmode="decimal">
-        </div>
-      </div>
-      <div class="form-field">
-        <label class="field-label">งวดทั้งหมด</label>
-        <input class="field-input" id="instEditTerms" type="number" placeholder="0" inputmode="numeric">
+      <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:16px;">
+        <div style="font-size:12px;color:var(--text2);margin-bottom:6px;">ยอดผ่อน/เดือน</div>
+        <div id="instEditMonthly" style="font-family:'Roboto Mono',monospace;font-size:22px;font-weight:600;color:#60a5fa;">฿0</div>
       </div>
 </div>
     <div class="sheet-footer">
@@ -569,10 +553,13 @@ function renderSummary(){
 function renderGroups(){
   const wrap=document.getElementById('groupList');
   wrap.innerHTML='';
-  if(!md().groups.length){
-    wrap.innerHTML='<div class="empty">กด "+ เพิ่มหมวดหมู่" เพื่อเริ่มต้น</div>';
-    return;
-  }
+  // Always prepend installment card first
+  const installCard=document.createElement('div');
+  installCard.style.cssText='margin:0 16px 10px;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.22);border-radius:var(--radius);overflow:hidden;';
+  installCard.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;"><div class="installment-badge">💳 รายการผ่อน</div><div style="display:flex;align-items:center;gap:8px;"><div class="installment-total" id="installTotal">฿0/เดือน</div><button onclick="event.stopPropagation();openSheet('installmentSheet')" style="width:32px;height:32px;border-radius:8px;background:rgba(96,165,250,0.15);border:none;color:#60a5fa;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">＋</button></div></div><div id="installHomeList"></div>`;
+  wrap.appendChild(installCard);
+  renderInstallHomeList();
+  if(!md().groups.length)return;
   md().groups.forEach(g=>{
     const tot=gTot(g), card=document.createElement('div');
     card.className='group-card'+(g.disabled?' disabled-group':'');
@@ -701,19 +688,20 @@ function renderInstallHomeList(){
   const tot=totInstallment();
   if(document.getElementById('installTotal'))document.getElementById('installTotal').textContent=fmt(tot)+'/เดือน';
   if(!insts.length){
-    wrap.innerHTML='<div style="padding:10px 16px 12px;font-size:13px;color:var(--text3);">ยังไม่มีรายการผ่อน — กดเพื่อเพิ่ม</div>';
+    wrap.innerHTML='<div style="padding:10px 16px 12px;font-size:13px;color:var(--text3);">ยังไม่มีรายการผ่อน — กด ＋ เพื่อเพิ่ม</div>';
     return;
   }
   wrap.innerHTML=insts.map((inst,i)=>{
-    const paidPct=inst.total>0?Math.min(100,Math.round(((inst.total-(inst.monthly*(inst.remain||0)))/inst.total)*100)):0;
+    const hasProgress=(inst.terms>0||inst.remain>0)&&inst.total>0;
+const paidPct=hasProgress?Math.min(100,Math.round(((inst.total-(inst.monthly*(inst.remain||0)))/inst.total)*100)):0;
     const dim=inst.disabled?'opacity:0.38;':'';
     return `<div style="border-top:1px solid rgba(96,165,250,0.12);${dim}padding:11px 16px;cursor:pointer;" onclick="openInstEditSheet(${i})">
       <div style="display:flex;align-items:center;gap:10px;">
         <div style="width:6px;height:6px;border-radius:50%;background:${inst.disabled?'var(--text3)':'#60a5fa'};flex-shrink:0;"></div>
         <div style="flex:1;min-width:0;">
           <div style="font-size:14px;${inst.disabled?'text-decoration:line-through;color:var(--text3);':''}">${inst.name}</div>
-          <div style="font-size:12px;color:var(--text3);margin-top:2px;">${inst.remain?inst.remain+' งวดคงเหลือ':''}${inst.total>0?' · รวม '+fmt(inst.total):''}${inst.disabled?' · ปิด':''}</div>
-          ${inst.total>0?`<div style="height:3px;background:var(--surface3);border-radius:2px;overflow:hidden;margin-top:6px;"><div style="height:100%;border-radius:2px;background:#60a5fa;width:${paidPct}%"></div></div>`:''}
+          <div style="font-size:12px;color:var(--text3);margin-top:2px;">${inst.remain?inst.remain+' งวดคงเหลือ':''}${inst.total>0?' รวม '+fmt(inst.total):''}${inst.disabled?' · ปิด':''}</div>
+          ${hasProgress?`<div style="height:3px;background:var(--surface3);border-radius:2px;overflow:hidden;margin-top:6px;"><div style="height:100%;border-radius:2px;background:#60a5fa;width:${paidPct}%"></div></div>`:''}
         </div>
         <div style="font-family:'Roboto Mono',monospace;font-size:14px;color:${inst.disabled?'var(--text3)':'#60a5fa'};flex-shrink:0;">${fmt(inst.monthly)}<span style="font-size:11px;color:var(--text3)">/เดือน</span></div>
         <button onclick="event.stopPropagation();delInstallment(${i})" class="item-del">✕</button>
@@ -744,7 +732,7 @@ function calcInstMonthly(){
 function resetInstForm(){
   editInstIdx=null;
   document.getElementById('instName').value='';
-  document.getElementById('instMonthly').value='';
+  // instMonthly field removed
   document.getElementById('instRemain').value='';
   document.getElementById('instTotal').value='';
   document.getElementById('instRate').value='';
@@ -841,7 +829,7 @@ function openInstEditSheet(i){
   editInstIdx=i;
   const inst=md().installments[i];
   document.getElementById('instEditName').value=inst.name;
-  document.getElementById('instEditMonthly').value=inst.monthly?inst.monthly.toLocaleString('en-US'):'';
+  document.getElementById('instEditMonthly').textContent=inst.monthly?'฿'+Math.round(inst.monthly).toLocaleString('th-TH'):'฿0';
   document.getElementById('instEditRemain').value=inst.remain||'';
   document.getElementById('instEditTotal').value=inst.total?inst.total.toLocaleString('en-US'):'';
   document.getElementById('instEditRate').value=inst.rate||'';
@@ -860,11 +848,17 @@ function toggleInstEditEnabled(){
 }
 function saveInstEdit(){
   const name=document.getElementById('instEditName').value.trim();
-  const monthly=rawVal('instEditMonthly');
-  const remain=parseInt(document.getElementById('instEditRemain').value)||0;
   const total=rawVal('instEditTotal');
   const rate=parseFloat(document.getElementById('instEditRate').value)||0;
   const terms=parseInt(document.getElementById('instEditTerms').value)||0;
+  const remain=parseInt(document.getElementById('instEditRemain').value)||0;
+  let monthly=0;
+  const rateM=rate/100/12;
+  if(total&&terms){
+    if(rateM===0){monthly=total/terms;}
+    else{monthly=total*(rateM*Math.pow(1+rateM,terms))/(Math.pow(1+rateM,terms)-1);}
+    monthly=Math.round(monthly);
+  }else if(total){monthly=total;}
   const disabled=document.getElementById('instEditToggle').dataset.enabled==='0';
   if(!name||!monthly)return;
   md().installments[editInstIdx]={name,monthly,remain,total,rate,terms,disabled};
@@ -880,11 +874,14 @@ function saveInstallment(){
   const rate=rateRaw/100/12;
   const terms=parseInt(document.getElementById('instTerms').value)||0;
   const remain=parseInt(document.getElementById('instRemain').value)||0;
-  let monthly=parseFloat(document.getElementById('instMonthly').value)||0;
-  if(!monthly&&total&&terms){
+  let monthly=0;
+  if(total&&terms){
     if(rate===0){monthly=total/terms;}
     else{monthly=total*(rate*Math.pow(1+rate,terms))/(Math.pow(1+rate,terms)-1);}
     monthly=Math.round(monthly);
+  } else if(total){
+    // No terms — treat total as the monthly amount directly
+    monthly=total;
   }
   if(!name||!monthly)return;
   const tb=document.getElementById('instAddToggle');
