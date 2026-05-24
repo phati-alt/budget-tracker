@@ -345,7 +345,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
         <div>
           <label class="field-label" style="display:block;margin-bottom:6px;">ยอดเต็มจำนวน</label>
-          <input class="field-input" id="instTotal" type="number" placeholder="0" inputmode="decimal" oninput="calcInstMonthly()">
+          <input class="field-input" id="instTotal" type="text" placeholder="0" inputmode="decimal" oninput="fmtField(this);calcInstMonthly();">
         </div>
         <div>
           <label class="field-label" style="display:block;margin-bottom:6px;">% ดอกเบี้ย</label>
@@ -433,7 +433,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
       <div class="form-field"><label class="field-label">ชื่อรายรับ</label><input class="field-input" id="iName" type="text" placeholder="เช่น เงินเดือน, ฟรีแลนซ์"></div>
       <div class="form-field">
         <label class="field-label">จำนวนเงิน (บาท)</label>
-        <input class="field-input" id="iAmtField" type="number" placeholder="0" inputmode="decimal">
+        <input class="field-input" id="iAmtField" type="text" placeholder="0" inputmode="decimal" oninput="fmtField(this);">
       </div>
       <div style="margin-bottom:12px;">
         <button onclick="toggleIncomeCalc()" id="incomeCalcToggleBtn" style="background:none;border:1px dashed var(--border2);border-radius:var(--radius-sm);padding:8px 14px;color:var(--text2);font-size:13px;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;width:100%;text-align:center;transition:all 0.15s;">🧮 ใช้เครื่องคิดเลข</button>
@@ -496,7 +496,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
       <div class="form-field"><label class="field-label">ชื่อรายการ</label><input class="field-input" id="itName" type="text" placeholder="เช่น ค่าน้ำ, Netflix"></div>
       <div class="form-field">
         <label class="field-label">จำนวนเงิน (บาท)</label>
-        <input class="field-input" id="itAmtField" type="number" placeholder="0" inputmode="decimal">
+        <input class="field-input" id="itAmtField" type="text" placeholder="0" inputmode="decimal" oninput="fmtField(this);">
       </div>
       <div style="margin-bottom:12px;">
         <button onclick="toggleItemCalc()" id="itemCalcToggleBtn" style="background:none;border:1px dashed var(--border2);border-radius:var(--radius-sm);padding:8px 14px;color:var(--text2);font-size:13px;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;width:100%;text-align:center;transition:all 0.15s;">🧮 ใช้เครื่องคิดเลข</button>
@@ -796,7 +796,7 @@ function toggleInstAddEnabled(){
   tb.className='toggle-btn '+(now?'off':'on');
 }
 function calcInstMonthly(){
-  const P=parseFloat(document.getElementById('instTotal').value)||0;
+  const P=rawVal('instTotal')||0;
   const r=(parseFloat(document.getElementById('instRate').value)||0)/100/12;
   const n=parseInt(document.getElementById('instTerms').value)||0;
   const el=document.getElementById('instMonthlyCalc');
@@ -951,7 +951,7 @@ function saveInstEdit(){
 
 function saveInstallment(){
   const name=document.getElementById('instName').value.trim();
-  const total=parseFloat(document.getElementById('instTotal').value)||0;
+  const total=rawVal('instTotal')||0;
   const rateRaw=parseFloat(document.getElementById('instRate').value)||0;
   const rate=rateRaw/100/12;
   const terms=parseInt(document.getElementById('instTerms').value)||0;
@@ -1016,7 +1016,7 @@ function openEditIncome(i){
   const it=md().income[i];
   document.getElementById('incomeSheetTitle').textContent='แก้ไขรายรับ';
   document.getElementById('iName').value=it.name;
-  document.getElementById('iAmtField').value=it.amount;
+  document.getElementById('iAmtField').value=it.amount?it.amount.toLocaleString('en-US'):'';
   cExpr[1]='';cRes[1]=it.amount;
   const itb=document.getElementById('incomeToggleBtn');const ien=!it.disabled;itb.className='toggle-btn '+(ien?'on':'off');itb.dataset.enabled=ien?'1':'0';
   document.getElementById('iDisp').textContent=fmtCalc(it.amount);
@@ -1028,7 +1028,7 @@ function openEditIncome(i){
 function openIncomeSheet(){editIncomeIdx=null;const itb=document.getElementById('incomeToggleBtn');itb.className='toggle-btn on';itb.dataset.enabled='1';cExpr[1]='';cRes[1]=0;document.getElementById('incomeSheetTitle').textContent='เพิ่มรายรับ';document.getElementById('iDisp').textContent='0';document.getElementById('iExpr').textContent='';document.getElementById('iName').value='';document.getElementById('iAmtField').value='';document.getElementById('incomeCalcWrap').style.display='none';document.getElementById('incomeCalcToggleBtn').textContent='🧮 ใช้เครื่องคิดเลข';openSheet('incomeSheet');}
 function saveIncome(){
   const name=document.getElementById('iName').value.trim();
-  const amt=parseFloat(document.getElementById('iAmtField').value)||cRes[1];
+  const amt=rawVal('iAmtField')||cRes[1];
   if(!name||!amt)return;
   const idisabled=document.getElementById('incomeToggleBtn').dataset.enabled==='0';
   if(editIncomeIdx!==null){md().income[editIncomeIdx]={name,amount:amt,disabled:idisabled};editIncomeIdx=null;}
