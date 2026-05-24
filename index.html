@@ -748,8 +748,8 @@ function renderInstallHomeList(){
   let html='';
 
   active.forEach(({inst,i})=>{
-    const hasProgress=(inst.terms>0||inst.remain>0)&&inst.total>0;
-    const paidPct=hasProgress?Math.min(100,Math.round(((inst.total-(inst.monthly*(inst.remain||0)))/inst.total)*100)):0;
+    const hasProgress=inst.terms>0&&inst.remain>=0;
+    const paidPct=hasProgress?Math.min(100,Math.max(0,Math.round((inst.terms-inst.remain)/inst.terms*100))):0;
     const dim=inst.disabled?'opacity:0.38;':'';
     html+=`<div style="border-top:1px solid rgba(96,165,250,0.12);${dim}padding:11px 16px;cursor:pointer;" onclick="openInstEditSheet(${i})">
       <div style="display:flex;align-items:center;gap:10px;">
