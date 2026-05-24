@@ -39,17 +39,18 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 .month-arrow{width:36px;height:36px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--text2);cursor:pointer;transition:all 0.15s;}
 .month-arrow:active{background:var(--surface3);color:var(--text);}
 .month-label{font-size:17px;font-weight:600;min-width:180px;text-align:center;}
-.hero-card{margin:0 16px 12px;background:linear-gradient(135deg,#1e1b4b 0%,#312e81 50%,#1e1b4b 100%);border-radius:24px;padding:24px;position:relative;overflow:hidden;}
-.hero-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 20%,rgba(139,132,255,0.25) 0%,transparent 60%);}
-.hero-label{font-size:13px;color:rgba(255,255,255,0.55);margin-bottom:6px;font-weight:500;}
-.hero-amount{font-family:'Roboto Mono',monospace;font-size:40px;font-weight:600;color:#fff;letter-spacing:-1px;margin-bottom:20px;}
+.hero-card{margin:0 16px 12px;background:linear-gradient(160deg,#0a0812 0%,#120f35 30%,#1e1860 60%,#0d0a22 100%);border-radius:24px;padding:28px 24px 24px;position:relative;overflow:hidden;}
+.hero-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 10%,rgba(108,99,255,0.55) 0%,transparent 50%),radial-gradient(ellipse at 5% 85%,rgba(96,165,250,0.28) 0%,transparent 45%),radial-gradient(ellipse at 50% 100%,rgba(139,92,246,0.15) 0%,transparent 60%);}
+.hero-card::after{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:rgba(108,99,255,0.15);pointer-events:none;}
+.hero-label{font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:8px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;}
+.hero-amount{font-family:'Roboto Mono',monospace;font-size:28px;font-weight:700;color:#ffffff;letter-spacing:-1px;margin-bottom:24px;text-shadow:0 1px 0 rgba(255,255,255,0.3);}
 .hero-amount.negative{color:#ff8e8e;}
 .hero-row{display:flex;gap:12px;}
-.hero-stat{flex:1;background:rgba(255,255,255,0.08);border-radius:12px;padding:12px;backdrop-filter:blur(10px);}
-.hero-stat-label{font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:4px;}
-.hero-stat-val{font-family:'Roboto Mono',monospace;font-size:16px;font-weight:600;color:#fff;}
-.hero-stat-val.green{color:#6efcb3;}
-.hero-stat-val.red{color:#ff8e8e;}
+.hero-stat{flex:1;background:rgba(10,10,16,0.50);border:1px solid rgba(255,255,255,0.15);border-radius:14px;padding:13px 14px;}
+.hero-stat-label{font-size:11px;color:rgba(255,255,255,0.65);margin-bottom:5px;letter-spacing:0.04em;}
+.hero-stat-val{font-family:'Roboto Mono',monospace;font-size:18px;font-weight:700;color:#ffffff;}
+.hero-stat-val.green{color:#00e87a;}
+.hero-stat-val.red{color:#ff4d4d;}
 
 .ring-wrap{position:relative;width:64px;height:64px;flex-shrink:0;}
 .ring-svg{width:64px;height:64px;}
@@ -224,10 +225,13 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
         <div class="page-title" style="display:flex;align-items:center;gap:10px;"><img src="data:image/png;base64,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" style="width:36px;height:36px;border-radius:9px;flex-shrink:0;" alt="logo"><span>จัดการงบรายเดือน</span></div>
         <div class="header-btn" onclick="openSheet('optionSheet')" title="ตัวเลือก">···</div>
       </div>
-      <div class="month-nav">
-        <div class="month-arrow" onclick="changeMonth(-1)">‹</div>
-        <div class="month-label" id="monthLabel"></div>
-        <div class="month-arrow" onclick="changeMonth(1)">›</div>
+      <div style="text-align:center;padding:0 20px;">
+        <div class="month-nav" style="margin-bottom:2px;">
+          <div class="month-arrow" onclick="changeMonth(-1)">‹</div>
+          <div class="month-label" id="monthLabel" onclick="goToCurrentMonth()" style="cursor:pointer;position:relative;"></div>
+          <div class="month-arrow" onclick="changeMonth(1)">›</div>
+        </div>
+        <div id="todayIndicator" style="font-size:11px;color:var(--accent-soft);margin-bottom:8px;display:none;">↩ กดเพื่อกลับเดือนปัจจุบัน</div>
       </div>
       <div class="hero-card">
         <div class="hero-label">เงินคงเหลือเดือนนี้</div>
@@ -235,10 +239,17 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
         <div class="hero-row">
           <div class="hero-stat"><div class="hero-stat-label">รายรับ</div><div class="hero-stat-val green" id="heroIncome">฿0</div></div>
           <div class="hero-stat"><div class="hero-stat-label">รายจ่าย</div><div class="hero-stat-val red" id="heroExpense">฿0</div></div>
-          <div class="hero-stat">
-            <div class="hero-stat-label">ผ่อนรวมทั้งหมด</div>
-            <div class="hero-stat-val" id="heroSave" style="color:#60a5fa">฿0</div>
-            <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:3px;">คงเหลือ <span id="heroInstRemain" style="color:rgba(96,165,250,0.8)">฿0</span></div>
+        </div>
+        <div style="margin-top:10px;" id="heroInstSection">
+          <div class="hero-stat" style="display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <div class="hero-stat-label">ผ่อนรวมทั้งหมด</div>
+              <div class="hero-stat-val" id="heroSave" style="color:#60a5fa">฿0</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:10px;color:rgba(255,255,255,0.4);">ยังต้องจ่ายอีก</div>
+              <div id="heroInstRemain" style="font-family:'Roboto Mono',monospace;font-size:14px;font-weight:600;color:#3b9eff;">฿0</div>
+            </div>
           </div>
         </div>
       </div>
@@ -333,7 +344,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
       <div class="form-field"><label class="field-label">ชื่อรายการ</label><input class="field-input" id="instName" type="text" placeholder="เช่น บัตรเครดิต, รถยนต์, มือถือ"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
         <div>
-          <label class="field-label" style="display:block;margin-bottom:6px;">ยอดรวม / ยอดผ่อน (บาท)</label>
+          <label class="field-label" style="display:block;margin-bottom:6px;">ยอดเต็มจำนวน</label>
           <input class="field-input" id="instTotal" type="number" placeholder="0" inputmode="decimal" oninput="calcInstMonthly()">
         </div>
         <div>
@@ -366,7 +377,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 <div class="sheet-overlay" id="instEditSheet">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-title">แก้ไขรายการผ่อน</div>
+    <div class="sheet-title" id="instEditSheetTitle">แก้ไขรายการผ่อน</div>
     <div class="sheet-body">
       <div style="display:flex;align-items:center;justify-content:space-between;padding:0 0 16px;">
         <div>
@@ -378,7 +389,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
       <div class="form-field"><label class="field-label">ชื่อรายการ</label><input class="field-input" id="instEditName" type="text" placeholder="เช่น บัตรเครดิต, รถยนต์, มือถือ"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
         <div>
-          <label class="field-label" style="display:block;margin-bottom:6px;">ยอดรวม / ยอดผ่อน (บาท)</label>
+          <label class="field-label" style="display:block;margin-bottom:6px;">ยอดเต็มจำนวน</label>
           <input class="field-input" id="instEditTotal" type="text" placeholder="0" inputmode="decimal" oninput="fmtField(this)">
         </div>
         <div>
@@ -410,11 +421,24 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 <div class="sheet-overlay" id="incomeSheet">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-title">เพิ่มรายรับ</div>
+    <div class="sheet-title" id="incomeSheetTitle">เพิ่มรายรับ</div>
     <div class="sheet-body">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:0 0 16px;">
+        <div>
+          <div style="font-size:15px;font-weight:500;">แสดงรายการ</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:2px;">ปิดเพื่อซ่อนและไม่นำไปคำนวณ</div>
+        </div>
+        <button class="toggle-btn on" id="incomeToggleBtn" onclick="toggleIncomeEnabled()"></button>
+      </div>
       <div class="form-field"><label class="field-label">ชื่อรายรับ</label><input class="field-input" id="iName" type="text" placeholder="เช่น เงินเดือน, ฟรีแลนซ์"></div>
       <div class="form-field">
         <label class="field-label">จำนวนเงิน (บาท)</label>
+        <input class="field-input" id="iAmtField" type="number" placeholder="0" inputmode="decimal">
+      </div>
+      <div style="margin-bottom:12px;">
+        <button onclick="toggleIncomeCalc()" id="incomeCalcToggleBtn" style="background:none;border:1px dashed var(--border2);border-radius:var(--radius-sm);padding:8px 14px;color:var(--text2);font-size:13px;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;width:100%;text-align:center;transition:all 0.15s;">🧮 ใช้เครื่องคิดเลข</button>
+      </div>
+      <div id="incomeCalcWrap" style="display:none;margin-bottom:16px;">
         <div class="calc-container">
           <div class="calc-screen"><div class="calc-expr-line" id="iExpr"></div><div class="calc-main-line" id="iDisp">0</div></div>
           <div class="calc-keys">
@@ -472,6 +496,12 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
       <div class="form-field"><label class="field-label">ชื่อรายการ</label><input class="field-input" id="itName" type="text" placeholder="เช่น ค่าน้ำ, Netflix"></div>
       <div class="form-field">
         <label class="field-label">จำนวนเงิน (บาท)</label>
+        <input class="field-input" id="itAmtField" type="number" placeholder="0" inputmode="decimal">
+      </div>
+      <div style="margin-bottom:12px;">
+        <button onclick="toggleItemCalc()" id="itemCalcToggleBtn" style="background:none;border:1px dashed var(--border2);border-radius:var(--radius-sm);padding:8px 14px;color:var(--text2);font-size:13px;font-family:'Noto Sans Thai',sans-serif;cursor:pointer;width:100%;text-align:center;transition:all 0.15s;">🧮 ใช้เครื่องคิดเลข</button>
+      </div>
+      <div id="itemCalcWrap" style="display:none;margin-bottom:16px;">
         <div class="calc-container">
           <div class="calc-screen"><div class="calc-expr-line" id="itExpr"></div><div class="calc-main-line" id="itDisp">0</div></div>
           <div class="calc-keys">
@@ -510,17 +540,22 @@ const COLORS=['#6c63ff','#30d780','#ff6b6b','#ffb830','#60a5fa','#f472b6','#2dd4
 let year=new Date().getFullYear(), month=new Date().getMonth();
 const STORAGE_KEY='budget-app-data';
 let data=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}'), selEmoji=EMOJIS[0], selColor=COLORS[0];
-let editGid=null, editIid=null, itemGid=null, editInstIdx=null;
+let editGid=null, editIid=null, itemGid=null, editInstIdx=null, editIncomeIdx=null;
 let cExpr=['',''], cRes=[0,0];
 
 function key(){return year+'-'+month;}
 function md(){if(!data[key()])data[key()]={income:[],groups:[],installments:[]};if(!data[key()].installments)data[key()].installments=[];return data[key()];}
 function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(data));}
 function fmt(n){return '฿'+(Math.round(n||0)).toLocaleString('th-TH');}
-function totInc(){return md().income.reduce((s,i)=>s+i.amount,0);}
-function totExp(){return md().groups.reduce((s,g)=>g.disabled?s:s+g.items.reduce((ss,i)=>ss+(i.disabled?0:i.amount),0),0)+(md().installments||[]).reduce((s,i)=>s+(i.disabled?0:i.monthly),0);}
+function totInc(){return md().income.reduce((s,i)=>s+(i.disabled?0:i.amount),0);}
+function totExp(){return md().groups.reduce((s,g)=>g.disabled?s:s+g.items.reduce((ss,i)=>ss+(i.disabled?0:i.amount),0),0)+(md().installments||[]).reduce((s,i)=>(i.disabled||isPaidOff(i))?s:s+i.monthly,0);}
 function gTot(g){return g.disabled?0:g.items.reduce((s,i)=>s+(i.disabled?0:i.amount),0);}
 
+function goToCurrentMonth(){
+  const now=new Date();
+  month=now.getMonth();year=now.getFullYear();
+  render();
+}
 function changeMonth(d){
   month+=d;
   if(month>11){month=0;year++;}
@@ -529,7 +564,11 @@ function changeMonth(d){
 }
 
 function render(){
+  const now=new Date();
+  const isCurrentMonth=(month===now.getMonth()&&year===now.getFullYear());
   document.getElementById('monthLabel').textContent=MONTHS[month]+' '+(year+543);
+  const ind=document.getElementById('todayIndicator');
+  if(ind)ind.style.display=isCurrentMonth?'none':'block';
   renderSummary();
   renderGroups();
   renderChart();
@@ -544,6 +583,11 @@ function renderSummary(){
   document.getElementById('heroExpense').textContent=fmt(exp);
   document.getElementById('heroSave').textContent=fmt(totInstallmentAll());
   const ri=document.getElementById('heroInstRemain');if(ri)ri.textContent=fmt(totInstallmentRemain());
+  const heroInstSection=document.getElementById('heroInstSection');
+  if(heroInstSection){
+    const hasActiveInst=(md().installments||[]).some(i=>!i.disabled&&!isPaidOff(i));
+    heroInstSection.style.display=hasActiveInst?'block':'none';
+  }
   document.getElementById('incomeCardTotal').textContent=fmt(inc);
   if(document.getElementById('installTotal'))document.getElementById('installTotal').textContent=fmt(totInstallment())+'/เดือน';
   renderInstallHomeList();
@@ -676,9 +720,10 @@ function duplicateToNextMonth(){
   },200);
 }
 
-function totInstallment(){return(md().installments||[]).reduce((s,i)=>s+(i.disabled?0:i.monthly),0);}
-function totInstallmentAll(){return(md().installments||[]).reduce((s,i)=>s+(i.disabled?0:(i.total||0)),0);}
-function totInstallmentRemain(){return(md().installments||[]).reduce((s,i)=>s+(i.disabled?0:(i.monthly||0)*(i.remain||0)),0);}
+function isPaidOff(i){return((i.remain===0||i.remain==='0'||i.remain===''||i.remain===null)&&(i.terms>0));}
+function totInstallment(){return(md().installments||[]).reduce((s,i)=>(i.disabled||isPaidOff(i))?s:s+i.monthly,0);}
+function totInstallmentAll(){return(md().installments||[]).reduce((s,i)=>(i.disabled||isPaidOff(i))?s:s+(i.total||0),0);}
+function totInstallmentRemain(){return(md().installments||[]).reduce((s,i)=>(i.disabled||isPaidOff(i))?s:s+(i.monthly||0)*(i.remain||0),0);}
 
 
 function renderInstallHomeList(){
@@ -691,11 +736,22 @@ function renderInstallHomeList(){
     wrap.innerHTML='<div style="padding:10px 16px 12px;font-size:13px;color:var(--text3);">ยังไม่มีรายการผ่อน — กด ＋ เพื่อเพิ่ม</div>';
     return;
   }
-  wrap.innerHTML=insts.map((inst,i)=>{
+
+  // Split: active vs paid-off (remain===0 and had terms originally)
+  const active=[], done=[];
+  insts.forEach((inst,i)=>{
+    const isPaidOff=(inst.remain===0||inst.remain==='0')&&(inst.terms>0);
+    if(isPaidOff) done.push({inst,i});
+    else active.push({inst,i});
+  });
+
+  let html='';
+
+  active.forEach(({inst,i})=>{
     const hasProgress=(inst.terms>0||inst.remain>0)&&inst.total>0;
-const paidPct=hasProgress?Math.min(100,Math.round(((inst.total-(inst.monthly*(inst.remain||0)))/inst.total)*100)):0;
+    const paidPct=hasProgress?Math.min(100,Math.round(((inst.total-(inst.monthly*(inst.remain||0)))/inst.total)*100)):0;
     const dim=inst.disabled?'opacity:0.38;':'';
-    return `<div style="border-top:1px solid rgba(96,165,250,0.12);${dim}padding:11px 16px;cursor:pointer;" onclick="openInstEditSheet(${i})">
+    html+=`<div style="border-top:1px solid rgba(96,165,250,0.12);${dim}padding:11px 16px;cursor:pointer;" onclick="openInstEditSheet(${i})">
       <div style="display:flex;align-items:center;gap:10px;">
         <div style="width:6px;height:6px;border-radius:50%;background:${inst.disabled?'var(--text3)':'#60a5fa'};flex-shrink:0;"></div>
         <div style="flex:1;min-width:0;">
@@ -707,7 +763,31 @@ const paidPct=hasProgress?Math.min(100,Math.round(((inst.total-(inst.monthly*(in
         <button onclick="event.stopPropagation();delInstallment(${i})" class="item-del">✕</button>
       </div>
     </div>`;
-  }).join('');
+  });
+
+  // Paid-off section
+  if(done.length){
+    html+=`<div style="border-top:1px solid rgba(96,165,250,0.12);padding:8px 16px 4px;font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;">ผ่อนครบแล้ว</div>`;
+    done.forEach(({inst,i})=>{
+      html+=`<div style="border-top:1px solid rgba(96,165,250,0.08);opacity:0.5;padding:10px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;" onclick="openInstEditSheet(${i})">
+        <div style="font-size:16px;">✅</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:14px;text-decoration:line-through;color:var(--text3);">${inst.name}</div>
+          ${inst.total>0?`<div style="font-size:12px;color:var(--text3);">รวม ${fmt(inst.total)}</div>`:''}
+        </div>
+        <button onclick="event.stopPropagation();delInstallment(${i})" class="item-del">✕</button>
+      </div>`;
+    });
+  }
+
+  wrap.innerHTML=html;
+}
+function toggleItemCalc(){
+  const wrap=document.getElementById('itemCalcWrap');
+  const btn=document.getElementById('itemCalcToggleBtn');
+  const show=wrap.style.display==='none';
+  wrap.style.display=show?'block':'none';
+  btn.textContent=show?'🧮 ซ่อนเครื่องคิดเลข':'🧮 ใช้เครื่องคิดเลข';
 }
 function toggleInstAddEnabled(){
   const tb=document.getElementById('instAddToggle');
@@ -828,6 +908,8 @@ function rawVal(id){return parseFloat((document.getElementById(id).value||'0').r
 function openInstEditSheet(i){
   editInstIdx=i;
   const inst=md().installments[i];
+  const isPaidOff=(inst.remain===0||inst.remain==='0')&&(inst.terms>0);
+  document.getElementById('instEditSheetTitle').textContent=isPaidOff?'✅ ผ่อนครบแล้ว':'แก้ไขรายการผ่อน';
   document.getElementById('instEditName').value=inst.name;
   document.getElementById('instEditMonthly').textContent=inst.monthly?'฿'+Math.round(inst.monthly).toLocaleString('th-TH'):'฿0';
   document.getElementById('instEditRemain').value=inst.remain||'';
@@ -909,15 +991,50 @@ function renderIncomeList(){
     return;
   }
   wrap.innerHTML=items.map((it,i)=>`
-    <div style="border-top:1px solid rgba(48,215,128,0.12);display:flex;align-items:center;gap:10px;padding:11px 16px;">
-      <div style="width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;"></div>
-      <div style="flex:1;font-size:14px;">${it.name}</div>
-      <div style="font-family:'Roboto Mono',monospace;font-size:14px;color:var(--green);">${fmt(it.amount)}</div>
-      <button onclick="delIncome(${i})" class="item-del">✕</button>
+    <div style="border-top:1px solid rgba(48,215,128,0.12);display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;${it.disabled?'opacity:0.38;':''}" onclick="openEditIncome(${i})">
+      <div style="width:6px;height:6px;border-radius:50%;background:${it.disabled?'var(--text3)':'var(--green)'};flex-shrink:0;"></div>
+      <div style="flex:1;font-size:14px;${it.disabled?'text-decoration:line-through;color:var(--text3);':''}">${it.name}</div>
+      <div style="font-family:'Roboto Mono',monospace;font-size:14px;color:${it.disabled?'var(--text3)':'var(--green)'};">${it.disabled?'ปิด':fmt(it.amount)}</div>
+      <button onclick="event.stopPropagation();delIncome(${i})" class="item-del">✕</button>
     </div>`).join('');
 }
-function openIncomeSheet(){cExpr[1]='';cRes[1]=0;document.getElementById('iDisp').textContent='0';document.getElementById('iExpr').textContent='';document.getElementById('iName').value='';openSheet('incomeSheet');}
-function saveIncome(){const name=document.getElementById('iName').value.trim(),amt=cRes[1];if(!name||!amt)return;md().income.push({name,amount:amt});save();closeSheet('incomeSheet');render();renderIncomeList();}
+function toggleIncomeEnabled(){
+  const tb=document.getElementById('incomeToggleBtn');
+  const now=tb.dataset.enabled==='1';
+  tb.dataset.enabled=now?'0':'1';
+  tb.className='toggle-btn '+(now?'off':'on');
+}
+function toggleIncomeCalc(){
+  const wrap=document.getElementById('incomeCalcWrap');
+  const btn=document.getElementById('incomeCalcToggleBtn');
+  const show=wrap.style.display==='none';
+  wrap.style.display=show?'block':'none';
+  btn.textContent=show?'🧮 ซ่อนเครื่องคิดเลข':'🧮 ใช้เครื่องคิดเลข';
+}
+function openEditIncome(i){
+  editIncomeIdx=i;
+  const it=md().income[i];
+  document.getElementById('incomeSheetTitle').textContent='แก้ไขรายรับ';
+  document.getElementById('iName').value=it.name;
+  document.getElementById('iAmtField').value=it.amount;
+  cExpr[1]='';cRes[1]=it.amount;
+  const itb=document.getElementById('incomeToggleBtn');const ien=!it.disabled;itb.className='toggle-btn '+(ien?'on':'off');itb.dataset.enabled=ien?'1':'0';
+  document.getElementById('iDisp').textContent=fmtCalc(it.amount);
+  document.getElementById('iExpr').textContent='';
+  document.getElementById('incomeCalcWrap').style.display='none';
+  document.getElementById('incomeCalcToggleBtn').textContent='🧮 ใช้เครื่องคิดเลข';
+  openSheet('incomeSheet');
+}
+function openIncomeSheet(){editIncomeIdx=null;const itb=document.getElementById('incomeToggleBtn');itb.className='toggle-btn on';itb.dataset.enabled='1';cExpr[1]='';cRes[1]=0;document.getElementById('incomeSheetTitle').textContent='เพิ่มรายรับ';document.getElementById('iDisp').textContent='0';document.getElementById('iExpr').textContent='';document.getElementById('iName').value='';document.getElementById('iAmtField').value='';document.getElementById('incomeCalcWrap').style.display='none';document.getElementById('incomeCalcToggleBtn').textContent='🧮 ใช้เครื่องคิดเลข';openSheet('incomeSheet');}
+function saveIncome(){
+  const name=document.getElementById('iName').value.trim();
+  const amt=parseFloat(document.getElementById('iAmtField').value)||cRes[1];
+  if(!name||!amt)return;
+  const idisabled=document.getElementById('incomeToggleBtn').dataset.enabled==='0';
+  if(editIncomeIdx!==null){md().income[editIncomeIdx]={name,amount:amt,disabled:idisabled};editIncomeIdx=null;}
+  else{md().income.push({name,amount:amt,disabled:idisabled});}
+  save();closeSheet('incomeSheet');render();renderIncomeList();
+}
 function delIncome(i){const it=md().income[i];showConfirm('ลบรายรับ \''+it.name+'\' ?',()=>{md().income.splice(i,1);save();render();renderIncomeList();},'ลบ','var(--red)');}
 
 function openGroupSheet(id=null){
