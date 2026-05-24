@@ -756,7 +756,8 @@ function renderInstallHomeList(){
         <div style="width:6px;height:6px;border-radius:50%;background:${inst.disabled?'var(--text3)':'#60a5fa'};flex-shrink:0;"></div>
         <div style="flex:1;min-width:0;">
           <div style="font-size:14px;${inst.disabled?'text-decoration:line-through;color:var(--text3);':''}">${inst.name}</div>
-          <div style="font-size:12px;color:var(--text3);margin-top:2px;">${inst.remain?inst.remain+' งวดคงเหลือ':''}${inst.total>0?' รวม '+fmt(inst.total):''}${inst.disabled?' · ปิด':''}</div>
+          <div style="font-size:12px;color:rgba(96,165,250,0.7);margin-top:2px;">${(inst.remain>0&&inst.monthly>0)?'คงเหลือ '+fmt(Math.round(inst.monthly*inst.remain))+(inst.terms>0&&inst.total>0?' (รวมดอกเบี้ย '+fmt(Math.round(inst.monthly*inst.terms-inst.total))+')':(inst.rate>0?' ('+inst.rate+'%/ปี)':'')):''}${inst.disabled?' · ปิด':''}</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:2px;">${inst.remain?inst.remain+' งวดคงเหลือ':''}${inst.total>0?' รวม '+fmt(inst.total):''}</div>
           ${hasProgress?`<div style="height:3px;background:var(--surface3);border-radius:2px;overflow:hidden;margin-top:6px;"><div style="height:100%;border-radius:2px;background:#60a5fa;width:${paidPct}%"></div></div>`:''}
         </div>
         <div style="font-family:'Roboto Mono',monospace;font-size:14px;color:${inst.disabled?'var(--text3)':'#60a5fa'};flex-shrink:0;">${fmt(inst.monthly)}<span style="font-size:11px;color:var(--text3)">/เดือน</span></div>
@@ -898,7 +899,6 @@ function initDrag(container, getItems, setItems, saveFn, renderFn){
   }
 }
 function fmtField(el){
-  // strip non-numeric except dot
   let raw=el.value.replace(/,/g,'').replace(/[^0-9.]/g,'');
   const parts=raw.split('.');
   parts[0]=parts[0].replace(/\B(?=(\d{3})+(?!\d))/g,',');
@@ -1107,10 +1107,8 @@ function saveItem(){
 function delItem(gid,idx){const g=md().groups.find(x=>x.id===gid);showConfirm('ลบรายการ \''+g.items[idx].name+'\' ?',()=>{g.items.splice(idx,1);save();render();},'ลบ','var(--red)');}
 
 function fmtCalc(n){
-  // Format number with commas, keep decimals if present
-  const parts=n.toString().split('.');
-  parts[0]=parts[0].replace(/\B(?=(\d{3})+(?!\d))/g,',');
-  return parts.join('.');
+  const v=parseFloat(n)||0;
+  return Math.round(v).toLocaleString('en-US');
 }
 function ck(v,isInc){
   const dispEl=isInc?document.getElementById('iDisp'):document.getElementById('itDisp');
