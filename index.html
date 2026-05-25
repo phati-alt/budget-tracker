@@ -76,7 +76,7 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 .section-divider-title{font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.08em;}
 .section-divider-btn{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--accent-soft);cursor:pointer;background:var(--accent-dim);border:none;border-radius:20px;padding:5px 12px;font-family:'Noto Sans Thai',sans-serif;font-weight:500;transition:background 0.15s;}
 .section-divider-btn:active{background:rgba(108,99,255,0.25);}
-.group-card{margin:0 16px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.group-card{margin:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
 .group-card-hdr{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);}
 .group-icon-wrap{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;transition:opacity 0.15s;}
 .group-icon-wrap:active{opacity:0.6;}
@@ -212,6 +212,11 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
 .drag-item.drag-over{border-top:2px solid var(--accent-soft);}
 .drag-handle{cursor:grab;padding:0 6px;color:var(--text3);font-size:16px;flex-shrink:0;touch-action:none;}
 .drag-handle:active{cursor:grabbing;}
+
+.group-list-scroll{display:flex;overflow-x:auto;gap:10px;padding:0 16px 12px 16px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.group-list-scroll::-webkit-scrollbar{display:none;}
+.group-card{flex:0 0 calc(100% - 32px);scroll-snap-align:start;margin:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.install-card-scroll{flex:0 0 calc(100% - 32px);scroll-snap-align:start;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.22);border-radius:var(--radius);overflow:hidden;}
 </style>
 </head>
 <body>
@@ -266,10 +271,13 @@ html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:var(
       </div>
 
       <div class="section-divider">
-        <div class="section-divider-title">หมวดหมู่รายจ่าย</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="section-divider-title">หมวดหมู่รายจ่าย</div>
+          <div id="groupCounter" style="font-size:12px;color:var(--text3);"></div>
+        </div>
         <button class="section-divider-btn" onclick="openGroupSheet()">＋ เพิ่มหมวดหมู่</button>
       </div>
-      <div id="groupList"></div>
+      <div id="groupList" class="group-list-scroll"></div>
 
       <div style="height:8px"></div>
     </div>
@@ -599,10 +607,12 @@ function renderGroups(){
   wrap.innerHTML='';
   // Always prepend installment card first
   const installCard=document.createElement('div');
-  installCard.style.cssText='margin:0 16px 10px;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.22);border-radius:var(--radius);overflow:hidden;';
+  installCard.className='install-card-scroll';
   installCard.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;"><div class="installment-badge">💳 รายการผ่อน</div><div style="display:flex;align-items:center;gap:8px;"><div class="installment-total" id="installTotal">฿0/เดือน</div><button onclick="event.stopPropagation();openSheet('installmentSheet')" style="width:32px;height:32px;border-radius:8px;background:rgba(96,165,250,0.15);border:none;color:#60a5fa;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">＋</button></div></div><div id="installHomeList"></div>`;
   wrap.appendChild(installCard);
   renderInstallHomeList();
+  const totalCards=1+(md().groups.length);
+  if(document.getElementById('groupCounter'))document.getElementById('groupCounter').textContent='1/'+totalCards;
   if(!md().groups.length)return;
   md().groups.forEach(g=>{
     const tot=gTot(g), card=document.createElement('div');
@@ -636,6 +646,20 @@ function renderGroups(){
       );
     }
   });
+  // Init scroll counter
+  initScrollCounter(wrap, totalCards||1+(md().groups.length));
+}
+
+function initScrollCounter(container, total){
+  const counter=document.getElementById('groupCounter');
+  if(!counter||!container)return;
+  counter.textContent='1/'+total;
+  container.onscroll=function(){
+    const cardW=container.querySelector('.group-card,.install-card-scroll');
+    if(!cardW)return;
+    const idx=Math.round(container.scrollLeft/(cardW.offsetWidth+10))+1;
+    counter.textContent=idx+'/'+total;
+  };
 }
 
 function renderChart(){
@@ -756,8 +780,8 @@ function renderInstallHomeList(){
         <div style="width:6px;height:6px;border-radius:50%;background:${inst.disabled?'var(--text3)':'#60a5fa'};flex-shrink:0;"></div>
         <div style="flex:1;min-width:0;">
           <div style="font-size:14px;${inst.disabled?'text-decoration:line-through;color:var(--text3);':''}">${inst.name}</div>
-          <div style="font-size:12px;color:rgba(96,165,250,0.7);margin-top:2px;">${(inst.remain>0&&inst.monthly>0)?'คงเหลือ '+fmt(Math.round(inst.monthly*inst.remain))+(inst.terms>0&&inst.total>0?' (รวมดอกเบี้ย '+fmt(Math.round(inst.monthly*inst.terms-inst.total))+')':(inst.rate>0?' ('+inst.rate+'%/ปี)':'')):''}${inst.disabled?' · ปิด':''}</div>
-          <div style="font-size:12px;color:var(--text3);margin-top:2px;">${inst.remain?inst.remain+' งวดคงเหลือ':''}${inst.total>0?' รวม '+fmt(inst.total):''}</div>
+          <div style="font-size:12px;color:rgba(96,165,250,0.7);margin-top:2px;">${(inst.remain>0&&inst.monthly>0)?'คงเหลือ '+fmt(Math.round(inst.monthly*inst.remain))+' ('+inst.remain+' งวด)':''}${inst.disabled?' · ปิด':''}</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:2px;">${inst.total>0?'รวม '+fmt(inst.total):''}</div>
           ${hasProgress?`<div style="height:3px;background:var(--surface3);border-radius:2px;overflow:hidden;margin-top:6px;"><div style="height:100%;border-radius:2px;background:#60a5fa;width:${paidPct}%"></div></div>`:''}
         </div>
         <div style="font-family:'Roboto Mono',monospace;font-size:14px;color:${inst.disabled?'var(--text3)':'#60a5fa'};flex-shrink:0;">${fmt(inst.monthly)}<span style="font-size:11px;color:var(--text3)">/เดือน</span></div>
@@ -1076,11 +1100,13 @@ function openItemSheet(gid,iid=null){
   if(iid!==null){
     const g=md().groups.find(x=>x.id===gid),it=g.items[iid];
     document.getElementById('itName').value=it.name;
+    document.getElementById('itAmtField').value=it.amount?it.amount.toLocaleString('en-US'):'';
     document.getElementById('itDisp').textContent=fmtCalc(it.amount);
     cExpr[0]=String(it.amount);cRes[0]=it.amount;
     itemEnabled=!it.disabled;
   }else{
     document.getElementById('itName').value='';
+    document.getElementById('itAmtField').value='';
     document.getElementById('itDisp').textContent='0';
   }
   document.getElementById('itExpr').textContent='';
@@ -1096,7 +1122,8 @@ function toggleItemEnabled(){
   tb.className='toggle-btn '+(now?'off':'on');
 }
 function saveItem(){
-  const name=document.getElementById('itName').value.trim(),amt=cRes[0];
+  const name=document.getElementById('itName').value.trim();
+  const amt=rawVal('itAmtField')||cRes[0];
   if(!name||!amt)return;
   const g=md().groups.find(x=>x.id===itemGid);
   const disabled=document.getElementById('itemToggleBtn').dataset.enabled==='0';
